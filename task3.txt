@@ -1,0 +1,123 @@
+namespace task3
+{
+    public class Book
+    {
+        private string title;
+        private string author;
+        private string isbn;
+        private bool available;
+
+        public Book(string title, string author, string isbn)
+        {
+            this.title = title;
+            this.author = author;
+            this.isbn = isbn;
+            this.available = true; // Books are available when added
+        }
+
+        public string GetTitle() => title;
+        public string GetAuthor() => author;
+        public string GetISBN() => isbn;
+
+        public bool IsAvailable() => available;
+
+        public void Borrow()
+        {
+            if (available) available = false;
+        }
+
+        public void Return()
+        {
+            if (!available) available = true;
+        }
+    }
+
+    public class Library
+    {
+        private List<Book> books = new List<Book>();
+
+        public void AddBook(Book book)
+        {
+            books.Add(book);
+        }
+
+        public void BorrowBook(string keyword)
+        {
+            Console.WriteLine($"Searching for book to borrow: {keyword}");
+            bool foundBook = false;
+            foreach (Book book in books)
+            {
+                if (book.GetTitle().Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    foundBook = true;
+                    if (book.IsAvailable())
+                    {
+                        book.Borrow();
+                        Console.WriteLine($"Borrowed: {book.GetTitle()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"The book '{book.GetTitle()}' is already borrowed.");
+                    }
+                    break;
+                }
+            }
+            if (!foundBook)
+            {
+                Console.WriteLine($"The book with title containing '{keyword}' is not available in the library.");
+            }
+        }
+
+        public void ReturnBook(string keyword)
+        {
+            Console.WriteLine($"Searching for book to return: {keyword}");
+            bool foundBook = false;
+            foreach (Book book in books)
+            {
+                if (book.GetTitle().Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    foundBook = true;
+                    if (!book.IsAvailable())
+                    {
+                        book.Return();
+                        Console.WriteLine($"Returned: {book.GetTitle()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"The book '{book.GetTitle()}' was not borrowed.");
+                    }
+                    break;
+                }
+            }
+            if (!foundBook)
+            {
+                Console.WriteLine($"The book with title containing '{keyword}' is not found in the library.");
+            }
+        }
+    }
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Library library = new Library();
+
+            // Adding books to the library
+            library.AddBook(new Book("The Great Gatsby", "F. Scott Fitzgerald", "9780743273565"));
+            library.AddBook(new Book("To Kill a Mockingbird", "Harper Lee", "9780061120084"));
+            library.AddBook(new Book("1984", "George Orwell", "9780451524935"));
+
+            // Searching and borrowing books
+            Console.WriteLine("Searching and borrowing books...");
+            library.BorrowBook("Gatsby");
+            library.BorrowBook("1984");
+            library.BorrowBook("Harry Potter"); // This book is not in the library
+
+            // Returning books
+            Console.WriteLine("\nReturning books...");
+            library.ReturnBook("Gatsby");
+            library.ReturnBook("Harry Potter"); // This book is not borrowed
+
+            Console.ReadLine();
+        }
+    }
+}
